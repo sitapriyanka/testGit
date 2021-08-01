@@ -96,3 +96,4 @@ status:
           lastTransitionTime: '2021-07-30T03:20:03Z'
       wildcardPolicy: None
       routerCanonicalHostname: apps-crc.testing
+---
