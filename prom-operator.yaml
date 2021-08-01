@@ -1,0 +1,162 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peopleapi-svc
+  namespace: monitoring
+labels:
+  operated-prometheus: true  
+spec:
+  selector:
+    app: peopleapi
+    deploymentconfig: peopleapi
+  ports:
+    - protocol: TCP
+      port: 7000
+      targetPort: 7000
+      name: 7000-tcp
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+      name: web
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: peopleapi
+  namespace: monitoring
+spec:
+  selector:
+    app: peopleapi
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: peopleapi
+    spec:
+      containers:
+        - name: peopleapi
+          image: peddadas/testhpa-repo:peopleapi
+          ports:
+            - containerPort: 7000
+            - containerPort: 5000
+
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: peopleapi-route
+  namespace: monitoring
+  uid: 877be87b-e7e5-473a-b85c-ddb20c1e2c7d
+  resourceVersion: '75097'
+  creationTimestamp: '2021-07-30T03:20:03Z'
+  annotations:
+    openshift.io/host.generated: 'true'
+  managedFields:
+    - manager: Mozilla
+      operation: Update
+      apiVersion: route.openshift.io/v1
+      time: '2021-07-30T03:20:03Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          'f:port':
+            .: {}
+            'f:targetPort': {}
+          'f:to':
+            'f:kind': {}
+            'f:name': {}
+            'f:weight': {}
+          'f:wildcardPolicy': {}
+    - manager: openshift-router
+      operation: Update
+      apiVersion: route.openshift.io/v1
+      time: '2021-07-30T03:20:03Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:status':
+          'f:ingress': {}
+spec:
+  host: peopleapi-route-monitoring.2886795276-80-lando02.environments.katacoda.com
+  to:
+    kind: Service
+    name: peopleapi-svc
+    weight: 100
+  port:
+    targetPort: web
+  wildcardPolicy: None
+status:
+  ingress:
+    - host: >-
+        peopleapi-route-monitoring.2886795276-80-lando02.environments.katacoda.com
+      routerName: default
+      conditions:
+        - type: Admitted
+          status: 'True'
+          lastTransitionTime: '2021-07-30T03:20:03Z'
+      wildcardPolicy: None
+      routerCanonicalHostname: apps-crc.testing
+
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: prom-op
+  namespace: monitoring
+  uid: 7ee288d7-2951-4e2c-8f66-389da2614cb1
+  resourceVersion: '75025'
+  creationTimestamp: '2021-07-30T03:19:32Z'
+  labels:
+    operated-prometheus: 'true'
+  annotations:
+    openshift.io/host.generated: 'true'
+  managedFields:
+    - manager: Mozilla
+      operation: Update
+      apiVersion: route.openshift.io/v1
+      time: '2021-07-30T03:19:32Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:operated-prometheus': {}
+        'f:spec':
+          'f:port':
+            .: {}
+            'f:targetPort': {}
+          'f:to':
+            'f:kind': {}
+            'f:name': {}
+            'f:weight': {}
+          'f:wildcardPolicy': {}
+    - manager: openshift-router
+      operation: Update
+      apiVersion: route.openshift.io/v1
+      time: '2021-07-30T03:19:32Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:status':
+          'f:ingress': {}
+spec:
+  host: prom-op-monitoring.2886795276-80-lando02.environments.katacoda.com
+  to:
+    kind: Service
+    name: prometheus-operated
+    weight: 100
+  port:
+    targetPort: web
+  wildcardPolicy: None
+status:
+  ingress:
+    - host: prom-op-monitoring.2886795276-80-lando02.environments.katacoda.com
+      routerName: default
+      conditions:
+        - type: Admitted
+          status: 'True'
+          lastTransitionTime: '2021-07-30T03:19:32Z'
+      wildcardPolicy: None
+      routerCanonicalHostname: apps-crc.testing
+
+
+
